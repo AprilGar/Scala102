@@ -3,8 +3,17 @@ case class Customer(order: List[MenuItem], loyaltyCard: Boolean, numberOfStars: 
 object Customer{
 
   def addStar(customer: Customer): Int = {
-    customer.numberOfStars + 1
+    if (customer.loyaltyCard){
+      customer.numberOfStars + 1
+    } else {
+      0
+    }
   }
+
+  def addItemToOrder(customer: Customer, menuItem: MenuItem): Customer = {
+    customer.copy(order = customer.order :+ menuItem)
+  }
+
 
 
 

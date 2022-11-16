@@ -14,6 +14,7 @@ class CafeSpec extends FlatSpec {
   "Cafe" should "add menu item to the menu list" in {
     val tea = MenuItem("tea", 0.80, true, true, false)
     val order: List[MenuItem] = List(steakSandwich, cola)
+    val customer = Customer(order, false, 0)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
     val updatedMenu = Cafe.addMenuItem(sydneyCafe, tea)
     assert(updatedMenu == Cafe("sydney cafe", List(cola, coffee, cheeseSandwich, steakSandwich, tea), order))
@@ -21,50 +22,70 @@ class CafeSpec extends FlatSpec {
 
   "Cafe" should "add price of all items in the order" in {
     val order: List[MenuItem] = List(steakSandwich, cola)
+    val customer = Customer(order, false, 0)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert (Cafe.totalBill(sydneyCafe) == 5.00)
+    assert (Cafe.totalBill(sydneyCafe, customer) == 5.00)
   }
 
   "Cafe" should "NOT put vat onto bill if only includes drinks" in {
     val order: List[MenuItem] = List(coffee, cola)
+    val customer = Customer(order, false, 0)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert(Cafe.addVatToBill(sydneyCafe) == 1.50)
+    assert(Cafe.addVatToBill(sydneyCafe,customer) == 1.50)
   }
 
   "Cafe" should "add 10% vat onto bill if includes cold food" in {
     val order: List[MenuItem] = List(cheeseSandwich, cola)
+    val customer = Customer(order, false, 0)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert(Cafe.addVatToBill(sydneyCafe) == 2.75)
+    assert(Cafe.addVatToBill(sydneyCafe, customer) == 2.75)
   }
 
   "Cafe" should "add 20% vat onto bill if includes hot food" in {
     val order: List[MenuItem] = List(steakSandwich, cola)
+    val customer = Customer(order, false, 0)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert (Cafe.addVatToBill(sydneyCafe) == 6.00)
+    assert (Cafe.addVatToBill(sydneyCafe, customer) == 6.00)
   }
 
   "Cafe" should "add £20 vat onto bill if 20% of bill exceeds £20" in {
     val order: List[MenuItem] = List(expensiveItem, coffee)
+    val customer = Customer(order, false, 0)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert(Cafe.addVatToBill(sydneyCafe) == 141.00)
+    assert(Cafe.addVatToBill(sydneyCafe, customer) == 141.00)
   }
 
   "Cafe" should "add 25% vat onto bill if it includes a premium item" in {
     val order: List[MenuItem] = List(lobsterRavioli, steakSandwich, cola)
+    val customer = Customer(order, false, 0)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert(Cafe.addVatToBill(sydneyCafe) == 37.5)
+    assert(Cafe.addVatToBill(sydneyCafe, customer) == 37.5)
   }
 
   "Cafe" should "add £40 vat onto bill if it includes a premium item and 25% > £40" in {
     val order: List[MenuItem] = List(lobsterRavioli, expensiveItem, expensiveItem)
+    val customer = Customer(order, false, 0)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert(Cafe.addVatToBill(sydneyCafe) == 305)
+    assert(Cafe.addVatToBill(sydneyCafe, customer) == 305)
   }
 
   "Customer" should "increase number of stars by 1" in {
     val order: List[MenuItem] = List(steakSandwich, cola)
-    val customer = Customer(order, true, 2)
-    assert(Customer.addStar(customer) == 3)
+    val customer = Customer(order, true, 0)
+    assert(Customer.addStar(customer) == 1)
+  }
+
+  "Customer" should "return 0 if customer does not have a loyalty card" in {
+    val order: List[MenuItem] = List(steakSandwich, cola)
+    val customer = Customer(order, false, 0)
+    assert(Customer.addStar(customer) == 0)
+  }
+
+  "Customer" should "add menu item to the order" in {
+    val order: List[MenuItem] = List(steakSandwich, cola)
+    val customer = Customer(order, true, 3)
+    val updatedOrder = Customer.addItemToOrder(customer, coffee)
+    assert(updatedOrder == Customer(List(steakSandwich, cola, coffee), true, 3))
   }
 
 }
