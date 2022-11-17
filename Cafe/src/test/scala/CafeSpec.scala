@@ -21,8 +21,9 @@ class CafeSpec extends FlatSpec {
 
   "Cafe" should "add price of all items in the order" in {
     val order: List[MenuItem] = List(steakSandwich, cola)
+    val customer = Customer(order, false, 0)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert (Cafe.totalBill(sydneyCafe) == 5.00)
+    assert (Cafe.totalBill(sydneyCafe, customer) == 5.00)
   }
 
   "Cafe" should "NOT put service charge onto bill if only includes drinks" in {
@@ -86,4 +87,16 @@ class CafeSpec extends FlatSpec {
     assert(updatedOrder == Customer(List(steakSandwich, cola, coffee), true, 3))
   }
 
+  "Customer" should "return sum of premium item price only" in {
+    val order: List[MenuItem] = List(steakSandwich, lobsterRavioli, lobsterRavioli)
+    val customer = Customer(order, true, 4)
+    assert(Customer.premiumItemsPrice(customer) == 50.00)
+  }
+
+    "Customer" should "discount 10% off bill total as no premium item is ordered and customer has 4 loyalty stars" in {
+      val order: List[MenuItem] = List(steakSandwich, cola)
+      val customer = Customer(order, true, 4)
+      val sydneyCafe = Cafe("sydney cafe", menuItems, order)
+      assert(Cafe.totalBill(sydneyCafe, customer) == 4.50)
+    }
 }
