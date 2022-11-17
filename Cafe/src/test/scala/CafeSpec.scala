@@ -99,4 +99,19 @@ class CafeSpec extends FlatSpec {
       val sydneyCafe = Cafe("sydney cafe", menuItems, order)
       assert(Cafe.totalBill(sydneyCafe, customer) == 4.50)
     }
+
+  "Customer" should "discount shouldn't be taken off premium items" in {
+    val order: List[MenuItem] = List(steakSandwich, lobsterRavioli, lobsterRavioli)
+    val customer = Customer(order, true, 4)
+    val sydneyCafe = Cafe("sydney cafe", menuItems, order)
+    assert(Cafe.totalBill(sydneyCafe, customer) == 54.05)
+  }
+
+  "Customer" should "no discount is given if customer has less that 3 loyalty stars" in {
+    val order: List[MenuItem] = List(steakSandwich, cola)
+    val customer = Customer(order, true, 2)
+    val sydneyCafe = Cafe("sydney cafe", menuItems, order)
+    assert(Cafe.totalBill(sydneyCafe, customer) == 5.00)
+  }
+
 }

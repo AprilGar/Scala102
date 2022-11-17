@@ -7,8 +7,13 @@ object Cafe {
   }
 
   def totalBill(cafe: Cafe, customer: Customer): BigDecimal = {
-    if (customer.loyaltyCard && customer.numberOfStars >= 3) {
-      Customer.loyaltyDiscount(cafe, customer)
+    if (customer.loyaltyCard && customer.numberOfStars >= 3 && customer.order.exists { item => item.Premium }) {
+      val totalOfPremiumItems = Customer.premiumItemsPrice(customer)
+      val loyaltydiscount = Customer.loyaltyDiscount(customer)
+      ((cafe.order.map(item => item.price).sum - totalOfPremiumItems) * loyaltydiscount) + totalOfPremiumItems
+    } else if (customer.loyaltyCard && customer.numberOfStars >= 3) {
+      val loyaltydiscount = Customer.loyaltyDiscount(customer)
+      cafe.order.map(item => item.price).sum * loyaltydiscount
     } else {
       cafe.order.map(item => item.price).sum
     }

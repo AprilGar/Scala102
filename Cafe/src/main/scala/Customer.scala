@@ -23,16 +23,12 @@ object Customer{
       premiumItemsOrdered.map(item => item.price).sum
   }
 
-  def loyaltyDiscount(cafe: Cafe, customer: Customer): BigDecimal = {
-    if (customer.order.exists { item => item.Premium } && customer.numberOfStars <= 8) {
-      (customer.numberOfStars * ((Cafe.totalBill(cafe, customer) - premiumItemsPrice(customer)) * 0.025)) + premiumItemsPrice(customer)
-    } else if (customer.numberOfStars <= 8) {
-      customer.numberOfStars * Cafe.totalBill(cafe, customer) * 0.025
+  def loyaltyDiscount(customer: Customer): BigDecimal = {
+    if (customer.numberOfStars <= 8) {
+      1 - customer.numberOfStars * 0.025
     } else {
-      Cafe.totalBill(cafe, customer) * 0.8
+      1 - 0.2
     }
   }
-
-
 
 }
