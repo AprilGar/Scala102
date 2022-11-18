@@ -25,7 +25,7 @@ class CafeSpec extends FlatSpec {
     val order: List[MenuItem] = List(steakSandwich, cola)
     val customer = Customer(order, false, 0)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert (Cafe.totalBill(sydneyCafe, customer) == 5.00)
+    assert (Cafe.totalBill(sydneyCafe, customer, LocalTime.now().getHour) == 5.00)
   }
 
   "Cafe" should "NOT put service charge onto bill if only includes drinks" in {
@@ -73,14 +73,20 @@ class CafeSpec extends FlatSpec {
   "Cafe" should "return 50% price of drinks between 6-9pm" in {
     val order: List[MenuItem] = List(cola, cola, coffee, coffee)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    val hour = 19
-    assert(Cafe.happyHour(sydneyCafe) == 1.50)
+    assert(Cafe.happyHour(sydneyCafe, 19) == 1.50)
   }
 
-  "Cafe" should "return 1.00 as multiplier for drinks price if not between 6-9pm" in {
+  "Cafe" should "return 0.00 for drinks price if not between 6-9pm" in {
     val order: List[MenuItem] = List(cola, cola, coffee, coffee)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert(Cafe.happyHour(sydneyCafe) == 1.00)
+    assert(Cafe.happyHour(sydneyCafe, 13) == 0.00)
+  }
+
+  "Cafe" should "add price of all food items in the order + 1/2 price drinks between 6-9pm" in {
+    val order: List[MenuItem] = List(steakSandwich, cola)
+    val customer = Customer(order, false, 0)
+    val sydneyCafe = Cafe("sydney cafe", menuItems, order)
+    assert(Cafe.totalBill(sydneyCafe, customer, 19) == 4.50)
   }
 
   "Customer" should "increase number of stars by 1" in {
@@ -112,21 +118,21 @@ class CafeSpec extends FlatSpec {
       val order: List[MenuItem] = List(steakSandwich, cola)
       val customer = Customer(order, true, 4)
       val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-      assert(Cafe.totalBill(sydneyCafe, customer) == 4.50)
+      assert(Cafe.totalBill(sydneyCafe, customer, LocalTime.now().getHour) == 4.50)
     }
 
   "Customer" should "discount shouldn't be taken off premium items" in {
     val order: List[MenuItem] = List(steakSandwich, lobsterRavioli, lobsterRavioli)
     val customer = Customer(order, true, 4)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert(Cafe.totalBill(sydneyCafe, customer) == 54.05)
+    assert(Cafe.totalBill(sydneyCafe, customer, LocalTime.now().getHour) == 54.05)
   }
 
   "Customer" should "no discount is given if customer has less that 3 loyalty stars" in {
     val order: List[MenuItem] = List(steakSandwich, cola)
     val customer = Customer(order, true, 2)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
-    assert(Cafe.totalBill(sydneyCafe, customer) == 5.00)
+    assert(Cafe.totalBill(sydneyCafe, customer, LocalTime.now().getHour) == 5.00)
   }
 
 }
