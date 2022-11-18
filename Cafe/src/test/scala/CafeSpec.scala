@@ -1,5 +1,7 @@
 import org.scalatest.FlatSpec
 
+import java.time.LocalTime
+
 class CafeSpec extends FlatSpec {
 
   //Menu Items data
@@ -66,6 +68,19 @@ class CafeSpec extends FlatSpec {
     val customer = Customer(order, false, 0)
     val sydneyCafe = Cafe("sydney cafe", menuItems, order)
     assert(Cafe.addServiceToBill(sydneyCafe, customer) == 305)
+  }
+
+  "Cafe" should "return 50% price of drinks between 6-9pm" in {
+    val order: List[MenuItem] = List(cola, cola, coffee, coffee)
+    val sydneyCafe = Cafe("sydney cafe", menuItems, order)
+    val hour = 19
+    assert(Cafe.happyHour(sydneyCafe) == 1.50)
+  }
+
+  "Cafe" should "return 1.00 as multiplier for drinks price if not between 6-9pm" in {
+    val order: List[MenuItem] = List(cola, cola, coffee, coffee)
+    val sydneyCafe = Cafe("sydney cafe", menuItems, order)
+    assert(Cafe.happyHour(sydneyCafe) == 1.00)
   }
 
   "Customer" should "increase number of stars by 1" in {

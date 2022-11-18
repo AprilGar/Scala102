@@ -1,7 +1,14 @@
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 case class Cafe (name: String, menuItems: List[MenuItem], order: List[MenuItem])
 
 object Cafe {
+
+//  val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+//  val time: String = formatter.format(LocalTime.now())
+  val hour: Int = LocalTime.now().getHour
+
   def addMenuItem(cafe: Cafe, menuItem: MenuItem): Cafe = {
     cafe.copy(menuItems = cafe.menuItems :+ menuItem)
   }
@@ -41,6 +48,15 @@ object Cafe {
     }
     else {
       totalBill(cafe, customer)
+    }
+  }
+
+  def happyHour(cafe: Cafe): BigDecimal = {
+    if (hour >= 18 && hour <21) {
+      val drinks = cafe.order.filter(item => item.Drink)
+      drinks.map(item => item.price).sum / 2
+    } else {
+      1.00
     }
   }
 
